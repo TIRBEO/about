@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motio
 import { Sparkles, ArrowUpRight } from "lucide-react";
 import { getIcon } from "@/lib/icons";
 import { getSections, getFeatures, getTeamMembers, getTimelineEvents, getSiteConfig, getFooterTree, type Section, type Feature, type TeamMember, type TimelineEvent, type SiteConfig, type FooterSection } from "@/lib/content";
+import { ACCOUNTS_URL } from "@/lib/config";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -34,8 +35,6 @@ function Mark() {
     </motion.span>
   );
 }
-
-const ACCOUNTS_URL = "https://accounts-three-self.vercel.app";
 
 export default function About() {
   const { scrollY } = useScroll();
