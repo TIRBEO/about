@@ -1,4 +1,16 @@
-import { supabase } from "./supabase";
+﻿import { supabase } from "./supabase";
+
+export interface NavItem {
+  icon?: string;
+  title: string;
+  description?: string;
+  href: string;
+}
+
+export interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
 
 export interface SiteConfig {
   site_name: string;
@@ -7,6 +19,8 @@ export interface SiteConfig {
   seo_title: string;
   seo_description: string;
   social_links: Record<string, string>;
+  site_url?: string;
+  nav?: NavGroup[];
 }
 
 export interface Section {
@@ -53,6 +67,39 @@ export interface FooterSection {
   title: string;
   sort_order: number;
   links: { id: string; label: string; href: string }[];
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  status: "live" | "coming_soon";
+  sort_order: number;
+}
+
+export interface JobOpening {
+  id: string;
+  title: string;
+  type: string;
+  location: string;
+  status: "open" | "coming_soon";
+  sort_order: number;
+}
+
+export interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category: string | null;
+  sort_order: number;
+}
+
+export interface ContactInfo {
+  id: string;
+  department: string;
+  email: string;
+  sort_order: number;
 }
 
 export async function getSiteConfig(): Promise<SiteConfig | null> {
@@ -106,4 +153,39 @@ export async function getFooterTree(): Promise<FooterSection[]> {
     ...s,
     links: (links || []).filter((l: { section_id: string }) => l.section_id === s.id).map(({ id, label, href }: { id: string; label: string; href: string }) => ({ id, label, href })),
   }));
+}
+
+export async function getProducts(): Promise<Product[]> {
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  return (data as Product[]) || [];
+}
+
+export async function getJobOpenings(): Promise<JobOpening[]> {
+  const { data } = await supabase
+    .from("job_openings")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  return (data as JobOpening[]) || [];
+}
+
+export async function getFAQs(): Promise<FAQ[]> {
+  const { data } = await supabase
+    .from("faqs")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  return (data as FAQ[]) || [];
+}
+
+export async function getContactInfo(): Promise<ContactInfo[]> {
+  const { data } = await supabase
+    .from("contact_info")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  return (data as ContactInfo[]) || [];
 }

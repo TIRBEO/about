@@ -1,0 +1,88 @@
+import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
+import gsap from "gsap";
+import { getSections, type Section } from "@/lib/content";
+import { VideoText } from "@/components/VideoText";
+
+export function Hero() {
+  const [section, setSection] = useState<Section | null>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
+  const paraRef = useRef<HTMLParagraphElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getSections("about").then((sections) => {
+      setSection(sections.find((s) => s.type === "hero") || null);
+    });
+  }, []);
+
+  useEffect(() => {
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.fromTo(labelRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 })
+      .fromTo(paraRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.35")
+      .fromTo(buttonsRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.35");
+  }, []);
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505]">
+      {/* Video background */}
+      <div className="absolute inset-0">
+        <VideoText
+          src="https://cdn.pixabay.com/video/2024/05/25/213616_large.mp4"
+          fontSize={22}
+          fontWeight="900"
+          fontFamily="Helvetica, Arial, sans-serif"
+          letterSpacing="0.06em"
+          textTransform="uppercase"
+        >
+          Tirbeo
+        </VideoText>
+      </div>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/25" />
+
+      {/* Floating content */}
+      <div className="relative z-10 mx-auto max-w-2xl px-6 text-center backdrop-blur-[5px]">
+        {/* Eyebrow */}
+        <span
+          ref={labelRef}
+          className="inline-flex items-center gap-3 text-2xl font-bold uppercase tracking-[0.25em] text-white/90"
+          style={{ textShadow: "0 2px 20px rgba(0,0,0,0.7)" }}
+        >
+          {((section?.metadata?.badge as string) || "Welcome to Tirbeo")}
+        </span>
+
+        {/* Paragraph */}
+        <p
+          ref={paraRef}
+          className="mt-10 mx-auto max-w-[580px] text-base font-light leading-[1.85] tracking-wide text-white/80"
+          style={{ textShadow: "0 2px 30px rgba(0,0,0,0.7)" }}
+        >
+          {section?.body || "Tirbeo is a technology company that builds innovative digital products across multiple domains. From professional communities to productivity and collaboration platforms, we create solutions that empower people and organizations to connect, work, and grow more effectively."}
+        </p>
+
+        {/* Buttons */}
+        <div
+          ref={buttonsRef}
+          className="mt-12 flex flex-wrap justify-center gap-5"
+        >
+          <a
+            href="#products"
+            className="group inline-flex items-center gap-2.5 rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-black transition-all duration-300 hover:bg-white/90 hover:scale-[1.02] hover:-translate-y-0.5"
+            style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.3)" }}
+          >
+            {((section?.metadata?.cta_label as string) || "Explore Our Products")}
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+          <a
+            href="#about"
+            className="inline-flex items-center gap-2.5 px-8 py-4 text-sm font-medium text-white/80 transition-all duration-300 hover:text-white hover:-translate-y-0.5"
+          >
+            {((section?.metadata?.cta_secondary as string) || "Learn About Us")}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
